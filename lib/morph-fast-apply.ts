@@ -1,6 +1,6 @@
 // Using direct fetch to Morph's OpenAI-compatible API to avoid SDK type issues
 // Simple shell argument quoting helper
-function shellQuote(args) {
+function shellQuote(args: string[]) {
   // Use JSON.stringify to safely quote each arg
   return args.map(a => JSON.stringify(a)).join(' ');
 }
