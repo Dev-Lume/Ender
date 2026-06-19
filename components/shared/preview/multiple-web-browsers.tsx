@@ -34,7 +34,7 @@ export default function MultipleWebBrowsers({
       startRotation();
     }
     return () => clearInterval(interval);
-  }, [autoRotate, rotationInterval]);
+  }, [autoRotate, rotationInterval, startRotation]);
 
   const startRotation = () => {
     interval = setInterval(() => {
