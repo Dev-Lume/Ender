@@ -6,8 +6,15 @@ import { Application, Assets, Sprite, Texture, Container } from "pixi.js";
  * Checks if the Pixi Application's rendering context has been lost.
  */
 export const isDestroyed = (app: Application): boolean => {
-  if (!app.ticker || !app.renderer || !app.stage || !app.renderer.gl) return true;
-  return app.renderer.gl.isContextLost();
+  if (!app.ticker || !app.renderer || !app.stage) return true;
+
+  // WebGLRenderer has a gl property
+  if ('gl' in app.renderer && (app.renderer as any).gl?.isContextLost) {
+    return (app.renderer as any).gl.isContextLost();
+  }
+
+  // WebGPURenderer or other renderers – assume not destroyed
+  return false;
 };
 
 /**
