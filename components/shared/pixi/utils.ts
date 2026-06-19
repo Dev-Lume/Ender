@@ -62,7 +62,7 @@ export const createRenderWithFPS = (app: Application, fps: number) => {
 /** Returns a promise that resolves when the Pixi canvas dispatches "pixi-initialized". */
 export const waitUntilPixiIsReady = (app: Application): Promise<void> => {
   return new Promise((resolve) => {
-    app.canvas.addEventListener("pixi-initialized", resolve);
+    (app.canvas as any).addEventListener("pixi-initialized", resolve);
   });
 };
 
