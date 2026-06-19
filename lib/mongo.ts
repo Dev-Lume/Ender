@@ -3,6 +3,7 @@ import { MongoClient, Db } from 'mongodb'
 declare global {
   // eslint-disable-next-line no-var
   var _mongoClient: MongoClient | undefined
+  var _mongoIndexesCreated: boolean | undefined
 }
 
 let client: MongoClient | undefined = global._mongoClient
@@ -21,13 +22,16 @@ export async function getDb(): Promise<Db> {
   await client.connect()
   db = client.db(dbName)
 
-  // Ensure indexes
-  await Promise.all([
-    db.collection('users').createIndex({ email: 1 }, { unique: true }),
-    db.collection('sessions').createIndex({ id: 1 }, { unique: true }),
-    db.collection('sessions').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
-    db.collection('projects').createIndex({ userId: 1, sandboxId: 1 }, { unique: true })
-  ])
+  // Ensure indexes only once per application lifespan
+  if (!global._mongoIndexesCreated) {
+    await Promise.all([
+      db.collection('users').createIndex({ email: 1 }, { unique: true }),
+      db.collection('sessions').createIndex({ id: 1 }, { unique: true }),
+      db.collection('sessions').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
+      db.collection('projects').createIndex({ userId: 1, sandboxId: 1 }, { unique: true })
+    ])
+    global._mongoIndexesCreated = true
+  }
 
   return db
 }
